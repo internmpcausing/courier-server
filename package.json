@@ -1,0 +1,35 @@
+{
+  "name": "courier-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "8.9.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/maps": "0.4.5",
+    "arraywrap": "1.0.0",
+    "bcryptjs": "2.4.3",
+    "body-parser": "1.18.2",
+    "cloudinary": "1.10.0",
+    "cors": "2.8.4",
+    "express": "4.16.2",
+    "express-async-errors": "2.1.2",
+    "express-validator": "5.0.3",
+    "jsonwebtoken": "8.2.0",
+    "lodash": "4.17.5",
+    "log4js": "2.5.3",
+    "mongoose": "5.0.9",
+    "nodemon": "1.17.1",
+    "passport": "0.4.0",
+    "passport-jwt": "3.0.1",
+    "pm2": "2.10.1",
+    "socket.io": "2.0.4",
+    "unirest": "0.5.1"
+  }
+}
