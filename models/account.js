@@ -55,13 +55,23 @@ const Account = module.exports =  mongoose.model('Account', accountSchema);
 
 
 module.exports.addNewUser = async (req) => {
-
     let account = new Account({
         username: req.username,
         password:  await hash(req.password),
         createdAt: (new Date).getTime(),
         verified: true,
         type: 4
+    });
+    return account.save();
+}
+
+module.exports.addNewDriver = async (req) => {
+    let account = new Account({
+        username: req.username,
+        password:  await hash(req.password),
+        createdAt: (new Date).getTime(),
+        verified: true,
+        type: 3
     });
     return account.save();
 }

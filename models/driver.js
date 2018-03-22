@@ -25,7 +25,7 @@ const driverSchema = new Schema({
             require: true
         },
         phone: {
-            type: Number,
+            type: String,
             require: true
         },
         vehicle: {
@@ -43,47 +43,61 @@ const driverSchema = new Schema({
                 required: true
             },
             year: {
-                type: Number,
+                type: String,
                 required: true
-            },
-            operator: {
-                name: {
-                    lastName: {
-                        type: String,
-                        required: true
-                    },
-                    firstName: {
-                        type: String,
-                        required: true
-                    }
-                },
-                phone: {
-                    type: Number,
-                    require: true
-                },
             },
             plateNumber: {
                 type: String,
                 required: true
             },
         },
-        
+        operator: {
+            name: {
+                lastName: {
+                    type: String,
+                    required: true
+                },
+                firstName: {
+                    type: String,
+                    required: true
+                }
+            },
+            phone: {
+                type: String,
+                require: true
+            },
+        }
 });
 
 const Driver = module.exports =  mongoose.model('Driver', driverSchema);
 
 module.exports.addNew = (req) => {
-    let user = new Driver({
+
+    let driver = new Driver({
         _id: ObjectId(req._id),
         name: {
             firstName: req.firstName,
-            lastName: req.lastName
+            lastName: req.lastName,
         },
+        address: req.address,
         email: req.email,
         phone: req.phone,
-        business: req.business ? req.business : ''
+        vehicle: {
+            type: ObjectId(req.vehicle.type),
+            manufacturer: req.vehicle.manufacturer,
+            model: req.vehicle.model,
+            year: req.vehicle.year,
+            plateNumber: req.vehicle.plateNumber
+        },
+        operator: {
+            name: {
+                firstName: req.operator.firstName,
+                lastName: req.operator.lastName
+            },
+            phone: req.operator.phone
+        }
     });
-    return user.save();
+    return driver.save();
 }
 
 module.exports.findByQuery = query => {

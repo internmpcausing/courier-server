@@ -56,5 +56,5 @@ const vehicles = require('./routes/vehicle');
 app.use('/api/vehicles', vehicles);
 
 app.use((err, req, res, next) => {
-    return res.status(err.status).json({ errors: err });
+    return res.status(500).json({ errors: err });
 });

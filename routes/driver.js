@@ -1,53 +1,71 @@
 const express = require('express');
 const router = express.Router();
-const Map = require('../util/map');
+
 const logger = require('../util/logger');
-const Validation = require('../util/validation');
 const arrayWrap = require('../util/arraywrap');
-const Account = require('../models/account');
-const Driver = require('../models/driver');
-const { check, body, validationResult } = require('express-validator/check');
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 
+// Sanitizer, Validator
+const Sanitize = require('./validations/sanitize');
+const PersonValidation = require('./validations/person');
+const AccountValidation = require('./validations/account');
+const VehicleValidation = require('./validations/vehicle');
+const { check, body, validationResult } = require('express-validator/check');
+
+// models
+const Account = require('../models/account');
+const Driver = require('../models/driver');
+
 router.post('/register', 
-    Validation.firstName,
-    Validation.lastName,
-    Validation.address,
-    Validation.emailDriver,
-    Validation.phone,
-    Validation.username,
-    Validation.password,
-    Validation.vehicle.type,
-    Validation.vehicle.manufacturer,
-    
+    Sanitize('firstName'),
+    Sanitize('lastName'),
+    Sanitize('address'),
+    Sanitize('email'),
+    Sanitize('phone'),
+    Sanitize('vehicle.type'),
+    Sanitize('vehicle.manufacturer'),
+    Sanitize('vehicle.model'),
+    Sanitize('vehicle.year'),
+    Sanitize('vehicle.operator.firstName'),
+    Sanitize('vehicle.operator.lastName'),
+    Sanitize('vehicle.operator.phone'),
+    Sanitize('username'),
+    Sanitize('password'),
+    PersonValidation.name('firstName'),
+    PersonValidation.name('lastName'),
+    PersonValidation.address('address'),
+    PersonValidation.emailDriver('email'),
+    PersonValidation.phone('phone'),
+    AccountValidation.username('username'),
+    AccountValidation.password('password'),
+    VehicleValidation.type('vehicle.type'),
+    VehicleValidation.manufacturer('vehicle.manufacturer'),
+    VehicleValidation.model('vehicle.model'),
+    VehicleValidation.year('vehicle.year'),
+    VehicleValidation.plateNumber('vehicle.plateNumber'),
+    PersonValidation.name('operator.firstName'),
+    PersonValidation.name('operator.lastName'),
+    PersonValidation.phone('operator.phone'),
     async (req, res, next) => {
     const errors = validationResult(req);
-    // if (!errors.isEmpty()) return res.status(422).json({ errors: errors.mapped() });
-    
+    if (!errors.isEmpty()) return res.status(422).json({ errors: errors.mapped() });
+
+    let account = await Account.addNewDriver(req.body);
+    req.body = Object.assign({}, req.body, {_id: account._id});
+    let driver = await Driver.addNew(req.body);
+
     res.send({
         success: true
     });
     
 })
 
-
 router.post('/authenticate',
-    [body('username')
-        .exists().withMessage('username is required')
-        .trim()
-        .isLength({min: 1}).withMessage('username is required'),
-    body('password')
-        .exists().withMessage('password is required')
-        .trim()
-        .isLength({min: 1}).withMessage('password is required')
-    ],
+    Sanitize('username'),
+    Sanitize('password'),
     async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) return res.status(422).json({ errors: errors.mapped() });
-
-    let account = await Account.authenticate(req.body.username, req.body.password, 4);
+    let account = await Account.authenticate(req.body.username, req.body.password, 3);
     let response = {};
     if(account){
         response = Object.assign({}, {
@@ -72,8 +90,6 @@ router.post('/authenticate',
     res.send(response);
     
 })
-
-
 
 
 module.exports = router;
