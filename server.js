@@ -8,6 +8,7 @@ const io = require('socket.io')(server, {
     pingInterval: 5000,
     pingTimeout: 5000
 });
+module.exports.io = io;
 const path = require('path');
 const unirest = require('unirest');
 const PORT = process.env.PORT || 8080;
@@ -28,16 +29,6 @@ mongoose.connection.on('connected', () => {logger.debug('Connected to Database '
 mongoose.connection.on('error', (err) => {logger.error('Database error '+err)});
 
 server.listen(PORT, () => logger.debug(`Listening on ${PORT}`));
-
-
-// const Map = require('./util/map');
-// Map.directions('11 San Antonio St, Pasig, Metro Magfggnila, Philippines', 'Megamall, Ortigas Center, Mandaluyong, Metro Manila, Philippines').then(data => {
-//     // logger.debug(data);
-//     console.log(data);
-// }).catch(err => {
-//     console.log(err);
-// })
-
 
 app.use(cors());
 app.use(bodyParser.json());
